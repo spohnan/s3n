@@ -1,0 +1,5 @@
+language: bash
+services:
+  - docker
+script:
+  - docker run --rm -v $(pwd):/tmp/s3n spohnan/shunit2 bash /tmp/s3n/src/test.sh
