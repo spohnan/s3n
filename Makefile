@@ -13,6 +13,6 @@ deploy: test build
 
 test:
 	@echo Starting test run ...
-	@docker run --rm -v $$(pwd):/tmp/s3n $(IMAGE) bash /tmp/s3n/src/test.sh
+	@docker run --rm -v $$(pwd):/tmp/s3n $(IMAGE) bash /tmp/s3n/test/test.sh
 
 .PHONY: build deploy test

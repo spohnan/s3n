@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Source the commands script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+. "${SCRIPT_DIR}/../../src/alias.sh"
+
+# If the aws stub is called to execute an s3n command just call directly
+test "${1:0:3}" = "s3n" && "$1"
+
+

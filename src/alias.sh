@@ -17,7 +17,6 @@ s3n-bucket-name() {
       accountid=$(aws sts get-caller-identity --query Account --output text)
       aws configure set default.s3n.bucket_prefix "$accountid"
     fi
-    i=$(aws configure get default.s3n.bucket_prefix)
     echo "s3n-${accountid:0:6}-${1}"
 }
 
@@ -44,6 +43,7 @@ s3n-help() {
 }
 
 s3n-key-name() {
-    if [ -x md5 ]; then s=$(echo -n "${1}" | md5sum); fi
+    hash md5 2>/dev/null    && s=$(echo -n "$1" | md5)
+    hash md5sum 2>/dev/null && s=$(echo -n "$1" | md5sum)
     echo "${s:0:6}-${1}";
 }
