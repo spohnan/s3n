@@ -43,7 +43,8 @@ s3n-help() {
 }
 
 s3n-key-name() {
-    hash md5 2>/dev/null    && s=$(echo -n "$1" | md5)
+    hash md5 2>/dev/null    && s=$(md5 -qs "$1" )
     hash md5sum 2>/dev/null && s=$(echo -n "$1" | md5sum)
-    echo "${s:0:6}-${1}";
+    out="${s:0:6}-${1}"
+    if [[ -z "$s" ]] || [[ "$out" = "d41d8c-" ]]; then echo -n "ERROR"; else echo -n "$out"; fi
 }
