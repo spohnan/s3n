@@ -4,5 +4,17 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 . "${SCRIPT_DIR}/../../src/alias.sh"
 
+DEFAULT_ACCOUNT_ID="0123456789"
+
 # If the aws stub is called to execute an s3n command just call directly
-test "${1:0:3}" = "s3n" && "$@"
+if test "${1:0:3}" = "s3n"; then
+    "$@"
+# aws configure get bucket prefix stub
+elif [[ "$@" =~ "configure get default.s3n.bucket_prefix" ]]; then
+   echo "s3n-${DEFAULT_ACCOUNT_ID}"
+# aws s3 stubs, just echo the command
+elif [[ "$@" =~ ^s3.* ]]; then
+    echo "$@"
+else
+    echo
+fi

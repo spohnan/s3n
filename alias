@@ -12,17 +12,18 @@ s3n = !f() {
 
 # plumbing
 s3n-bucket-name = !f() {
-    accountid=$(aws configure get default.s3n.bucket_prefix)
-    if [ -z "$accountid" ]; then
+    prefix=$(aws configure get default.s3n.bucket_prefix)
+    if [ -z "$prefix" ]; then
       accountid=$(aws sts get-caller-identity --query Account --output text)
-      aws configure set default.s3n.bucket_prefix "$accountid"
+      prefix="s3n-${accountid}"
+      aws configure set default.s3n.bucket_prefix $prefix
     fi
-    echo "s3n-${accountid:0:6}-${1}"
+    if [[ -z "$1" ]]; then echo -n "ERROR"; else echo -n "${prefix}-${1}"; fi
  }; f
 
 s3n-cp = !f() {
-    [[ "$@" =~ (.*)s3n://([^ /]*)([^ ]*) ]] && \
-      localpath="${BASH_REMATCH[1]}" && \
+    [[ "$@" =~ (.*)s3n:\/\/([^ /]*)([^ ]*) ]] && \
+      localpath="$(echo ${BASH_REMATCH[1]} | tr -d '[:space:]')" && \
       filename="${localpath/*\//}" && \
       bucket="${BASH_REMATCH[2]}"
     key=$(aws s3n-key-name "${filename/*\//}")
@@ -43,7 +44,7 @@ s3n-help = !f() {
  }; f
 
 s3n-key-name = !f() {
-    hash md5 2>/dev/null    && s=$(md5 -qs "$1" )
+    hash md5    2>/dev/null && s=$(md5 -qs "$1" )
     hash md5sum 2>/dev/null && s=$(echo -n "$1" | md5sum)
     out="${s:0:6}-${1}"
     if [[ -z "$s" ]] || [[ "$out" = "d41d8c-" ]]; then echo -n "ERROR"; else echo -n "$out"; fi
